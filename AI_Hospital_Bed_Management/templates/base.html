@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}CareBeds{% endblock %} · AI Bed Management</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+{% if session.get('user_id') %}
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="brand" href="{{ url_for('dashboard') }}"><span class="brand-icon">✚</span><span>CareBeds<small>INTELLIGENT CARE</small></span></a>
+    <div class="nav-label">WORKSPACE</div>
+    <a class="nav-item {% if request.endpoint == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}">▦ <span>Dashboard</span></a>
+    <a class="nav-item {% if request.endpoint == 'beds' %}active{% endif %}" href="{{ url_for('beds') }}">▤ <span>Bed inventory</span></a>
+    <a class="nav-item {% if request.endpoint == 'patients' %}active{% endif %}" href="{{ url_for('patients') }}">♙ <span>Patients</span></a>
+    <a class="nav-item {% if request.endpoint == 'admissions' %}active{% endif %}" href="{{ url_for('admissions') }}">⇄ <span>Admissions</span></a>
+    <a class="nav-item {% if request.endpoint == 'predictions' %}active{% endif %}" href="{{ url_for('predictions') }}">⌁ <span>AI demand outlook</span></a>
+    <a class="nav-item" href="{{ url_for('export_report') }}">⇩ <span>Export bed report</span></a>
+    {% if session.get('role') == 'admin' %}<a class="nav-item {% if request.endpoint in ['users', 'delete_user'] %}active{% endif %}" href="{{ url_for('users') }}">♙ <span>User management</span></a>{% endif %}
+    <div class="sidebar-bottom"><div class="user-avatar">{{ session.get('username','A')[0]|upper }}</div><div class="user-info"><strong>{{ session.get('username') }}</strong><small>{{ session.get('role','staff')|title }}</small></div><a class="logout" href="{{ url_for('logout') }}" title="Log out">↗</a></div>
+  </aside>
+  <main class="main-area">
+    <header class="topbar"><div><div class="eyebrow">HOSPITAL OPERATIONS</div><h1>{% block page_title %}Overview{% endblock %}</h1></div><div class="topbar-right"><span class="live-dot"></span><span>System online</span><span class="date-chip">{{ now_date }}</span></div></header>
+    <section class="content-area">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}{% for category, message in messages %}<div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">{{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>{% endfor %}{% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </section>
+    <footer class="footer">CareBeds · Hospital operations workspace <span>Educational demo · Use fictional patient data</span></footer>
+  </main>
+</div>
+{% else %}
+{% block public_content %}{% endblock %}
+{% endif %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>

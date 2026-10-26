@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}User management{% endblock %}
+{% block page_title %}User management{% endblock %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-5">
+    <div class="panel p-4">
+      <div class="eyebrow">ADMINISTRATOR ONLY</div>
+      <h2 class="h4 mt-2">Create a user account</h2>
+      <p class="muted">Create separate sign-in details for hospital staff. Passwords are stored as secure hashes.</p>
+      <form method="post" autocomplete="off">
+        <label class="form-label" for="username">Username</label>
+        <input class="form-control" id="username" name="username" minlength="3" maxlength="80" required autocomplete="off" placeholder="e.g. dr.rahul">
+        <label class="form-label mt-3" for="password">Temporary password</label>
+        <input class="form-control" id="password" name="password" type="password" minlength="8" required autocomplete="new-password" placeholder="At least 8 characters">
+        <label class="form-label mt-3" for="role">Role</label>
+        <select class="form-select" id="role" name="role" required>
+          <option value="staff">Staff</option>
+          <option value="doctor">Doctor</option>
+          <option value="admin">Administrator</option>
+        </select>
+        <div class="small muted mt-2">Only administrators can open this page. Share login details privately.</div>
+        <button class="btn btn-primary w-100 mt-4" type="submit">Create account</button>
+      </form>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <div class="panel p-4">
+      <div class="d-flex justify-content-between align-items-center gap-3 mb-3"><div><h2 class="h4 mb-1">Registered accounts</h2><p class="muted mb-0">{{ users|length }} account(s)</p></div><span class="badge text-bg-light">Admin view</span></div>
+      <div class="table-responsive"><table class="table align-middle">
+        <thead><tr><th>Username</th><th>Role</th><th>Action</th></tr></thead>
+        <tbody>
+        {% for user in users %}
+          <tr><td><strong>{{ user.username }}</strong>{% if user.id == session.get('user_id') %}<span class="badge text-bg-primary ms-1">You</span>{% endif %}</td>
+          <td><span class="badge {% if user.role == 'admin' %}text-bg-primary{% elif user.role == 'doctor' %}text-bg-success{% else %}text-bg-secondary{% endif %}">{{ user.role|title }}</span></td>
+          <td>{% if user.id != session.get('user_id') %}<form method="post" action="{{ url_for('delete_user', user_id=user.id) }}" onsubmit="return confirm('Delete account {{ user.username }}? This cannot be undone.');"><button class="btn btn-sm btn-outline-danger" type="submit">Delete</button></form>{% else %}<span class="small muted">Current account</span>{% endif %}</td></tr>
+        {% else %}<tr><td colspan="3" class="text-center muted py-4">No accounts found.</td></tr>{% endfor %}
+        </tbody></table></div>
+      <div class="alert alert-info small mb-0">Demo note: roles are stored with each account. In this educational version, all signed-in roles can use the operational pages; only account management is restricted to administrators.</div>
+    </div>
+  </div>
+</div>
+{% endblock %}

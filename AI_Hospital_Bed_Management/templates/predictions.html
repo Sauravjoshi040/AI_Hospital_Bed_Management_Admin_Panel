@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}AI demand outlook{% endblock %}
+{% block page_title %}AI demand outlook{% endblock %}
+{% block content %}
+<div class="page-intro"><p class="muted">A machine-learning demonstration for planning and capacity awareness.</p><span class="tag warning-tag">DEMO MODEL</span></div>
+<div class="alert alert-warning"><strong>Important:</strong> Forecasts are trained on synthetic demonstration data, not real hospital records. They are not clinically validated and must not be used for real patient placement or staffing decisions.</div>
+<div class="stat-grid two-stats">
+  <div class="stat-card"><div class="stat-top"><span>Current occupancy</span><span class="stat-icon purple">⌁</span></div><div class="stat-number">{{ occupancy }}%</div><div class="stat-foot">{{ occupied }} occupied out of {{ total }} total beds</div></div>
+  <div class="stat-card"><div class="stat-top"><span>Forecast horizon</span><span class="stat-icon blue">◷</span></div><div class="stat-number">7 days</div><div class="stat-foot">Random Forest Regression demo</div></div>
+</div>
+<div class="panel table-panel"><div class="panel-heading"><div><h3>Seven-day occupancy forecast</h3><p>Estimated occupied beds and occupancy rates.</p></div></div><div class="table-responsive"><table class="table align-middle"><thead><tr><th>DATE</th><th>ESTIMATED OCCUPIED</th><th>ESTIMATED OCCUPANCY</th><th>UTILIZATION</th></tr></thead><tbody>{% for item in forecast %}<tr><td><strong>{{ item.day }}</strong></td><td>{{ item.beds }} / {{ total }}</td><td>{{ item.rate }}%</td><td><div class="progress forecast-progress"><div class="progress-bar {% if item.rate >= 85 %}high{% endif %}" style="width:{{ item.rate }}%"></div></div></td></tr>{% else %}<tr><td colspan="4" class="empty-state">Add beds to generate a forecast.</td></tr>{% endfor %}</tbody></table></div></div>
+<div class="panel note-panel"><div class="note-icon">✦</div><div><h3>Model information</h3><p>Algorithm: Random Forest Regressor. Demonstration history: {{ metrics.training_days or 0 }} synthetic daily records. Training-set MAE: {{ metrics.mae if metrics.mae is not none else 'N/A' }} beds. This is a training-set metric, not a reliable estimate of real-world forecasting performance. A production model requires real, authorized, de-identified data and a time-based holdout evaluation.</p></div></div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Sign in{% endblock %}
+{% block public_content %}
+<div class="login-page">
+  <div class="login-visual"><div class="login-logo">✚ CareBeds</div><div class="login-message"><span class="pill">SMART HOSPITAL OPERATIONS</span><h1>Better visibility.<br><em>Better care.</em></h1><p>One clear view of bed availability, patient admissions and operational demand.</p><div class="visual-stats"><div><strong>24/7</strong><small>Operational overview</small></div><div><strong>Live</strong><small>Bed status tracking</small></div></div></div><div class="visual-footer">Designed for clarity in busy care environments.</div></div>
+  <div class="login-form-wrap"><form class="login-card" method="post"><div class="eyebrow">WELCOME BACK</div><h2>Sign in to CareBeds</h2><p class="muted">Use your demo account to explore the workspace.</p>
+    {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}{% for category, message in messages %}<div class="alert alert-{{ category }}">{{ message }}</div>{% endfor %}{% endif %}{% endwith %}
+    <label class="form-label" for="username">Username</label><input class="form-control form-control-lg" id="username" name="username" required autocomplete="username" placeholder="Enter username">
+    <label class="form-label mt-3" for="password">Password</label><input class="form-control form-control-lg" id="password" name="password" type="password" required autocomplete="current-password" placeholder="Enter password">
+    <button class="btn btn-primary btn-lg w-100 mt-4">Sign in <span>→</span></button>
+    <div class="demo-login"><strong>Demo credentials</strong><div>Username: <code>admin</code></div><div>Password: <code>Admin@123</code></div></div>
+  </form></div>
+</div>
+{% endblock %}

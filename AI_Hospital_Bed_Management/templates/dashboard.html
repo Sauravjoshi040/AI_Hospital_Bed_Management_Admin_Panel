@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Dashboard
+{% endblock %}
+{% block page_title %}Dashboard overview
+{% endblock %}
+{% block content %}
+<div class="welcome-row"><div><p class="muted mb-1">Here is your hospital's current bed status.</p><h2>Good day, {{ session.get('username')|title }} <span>✦</span></h2></div><a class="btn btn-primary" href="{{ url_for('admissions') }}">＋ New admission</a></div>
+<div class="stat-grid">
+  <div class="stat-card"><div class="stat-top"><span>Total beds</span><span class="stat-icon blue">▤</span></div><div class="stat-number">{{ total }}</div><div class="stat-foot">Across all wards</div></div>
+  <div class="stat-card"><div class="stat-top"><span>Available</span><span class="stat-icon green">✓</span></div><div class="stat-number">{{ available }}</div><div class="stat-foot"><span class="mini-dot green-dot"></span> Ready for allocation</div></div>
+  <div class="stat-card"><div class="stat-top"><span>Occupied</span><span class="stat-icon purple">♙</span></div><div class="stat-number">{{ occupied }}</div><div class="stat-foot">Currently in use</div></div>
+  <div class="stat-card"><div class="stat-top"><span>Maintenance</span><span class="stat-icon orange">⚒</span></div><div class="stat-number">{{ maintenance }}</div><div class="stat-foot">Unavailable for allocation</div></div>
+</div>
+<div class="dashboard-grid">
+  <div class="panel occupancy-panel"><div class="panel-heading"><div><h3>Bed occupancy</h3><p>Current bed utilization</p></div><span class="tag">LIVE SNAPSHOT</span></div><div class="occupancy-body"><div class="donut-wrap"><canvas id="occupancyChart" data-occupied="{{ occupied }}" data-available="{{ available }}" data-maintenance="{{ maintenance }}"></canvas><div class="donut-center"><strong>{{ occupancy }}%</strong><small>Occupancy</small></div></div><div class="legend"><div><i class="legend-dot purple-bg"></i><span>Occupied</span><strong>{{ occupied }}</strong></div><div><i class="legend-dot green-bg"></i><span>Available</span><strong>{{ available }}</strong></div><div><i class="legend-dot orange-bg"></i><span>Maintenance</span><strong>{{ maintenance }}</strong></div></div></div><div class="occupancy-progress"><div class="progress-label"><span>Utilization</span><strong>{{ occupancy }}%</strong></div><div class="progress"><div class="progress-bar" style="width:{{ occupancy }}%"></div></div></div></div>
+  <div class="panel quick-panel"><div class="panel-heading"><div><h3>Quick actions</h3><p>Common tasks</p></div></div><a class="quick-action" href="{{ url_for('patients') }}"><span class="quick-icon blue">＋</span><span><strong>Register patient</strong><small>Create a patient record</small></span><b>→</b></a><a class="quick-action" href="{{ url_for('beds') }}"><span class="quick-icon green">▤</span><span><strong>Manage beds</strong><small>View inventory and status</small></span><b>→</b></a><a class="quick-action" href="{{ url_for('predictions') }}"><span class="quick-icon purple">⌁</span><span><strong>Demand outlook</strong><small>Review the 7-day estimate</small></span><b>→</b></a><div class="tip-box"><span>✦</span><div><strong>Operational tip</strong><p>Keep bed statuses updated so occupancy reports remain useful.</p></div></div></div>
+</div>
+<div class="panel table-panel"><div class="panel-heading"><div><h3>Recent admissions</h3><p>Latest patient bed assignments</p></div><a class="text-link" href="{{ url_for('admissions') }}">View all →</a></div>
+  <div class="table-responsive"><table class="table align-middle"><thead><tr><th>PATIENT</th><th>BED</th><th>WARD</th><th>ADMITTED</th><th>STATUS</th></tr></thead><tbody>
+  {% for item in recent %}<tr><td><div class="patient-cell"><span class="table-avatar">{{ item.patient.full_name[0]|upper }}</span><strong>{{ item.patient.full_name }}</strong></div></td><td>{{ item.bed.bed_number }}</td><td>{{ item.bed.ward.name }}</td><td>{{ item.admitted_at.strftime('%d %b %Y, %H:%M') }}</td><td><span class="status-badge {{ 'occupied' if item.status == 'Active' else 'available' }}">{{ item.status }}</span></td></tr>
+  {% else %}<tr><td colspan="5" class="empty-state">No admissions yet. Register a patient and create an admission to see activity here.</td></tr>{% endfor %}
+  </tbody></table></div>
+</div>
+
+<div class="panel table-panel"><div class="panel-heading"><div><h3>Ward occupancy</h3><p>Bed usage grouped by ward</p></div></div><div class="table-responsive"><table class="table align-middle"><thead><tr><th>WARD</th><th>OCCUPIED</th><th>TOTAL BEDS</th><th>OCCUPANCY</th><th>UTILIZATION</th></tr></thead><tbody>
+{% for ward in ward_stats %}<tr><td><strong>{{ ward.name }}</strong></td><td>{{ ward.occupied }}</td><td>{{ ward.total }}</td><td>{{ ward.rate }}%</td><td><div class="progress forecast-progress"><div class="progress-bar {% if ward.rate >= 85 %}high{% endif %}" style="width:{{ ward.rate }}%"></div></div></td></tr>{% else %}<tr><td colspan="5" class="empty-state">No wards available.</td></tr>{% endfor %}
+</tbody></table></div></div>
+{% endblock %}
